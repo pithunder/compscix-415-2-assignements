@@ -1,0 +1,60 @@
+---
+title: "COMPSCIX 415.2 Homework 1"
+author: Ken Vo
+date: 2-4-19
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+My Github repository for my assignments can be fournd at this URL:  https://github.com/pithunder/compscix-415-2-assignements
+
+
+```{r load_packages, warning=FALSE, message=FALSE}
+
+library(mdsr)
+library(tidyverse)
+
+data("WorldCities")
+
+glimpse(WorldCities)
+
+```
+
+# Question 1:  There are 23,018 observations and 10 variables.  Some of the variables are:  code, name, latitude, and longitude.
+
+
+```{r}
+
+WorldCities <- head(WorldCities, 200) # 200 rows
+
+```
+
+```{r}
+
+country_col <- WorldCities$country
+
+```
+
+```{r}
+unique(country_col)
+```
+# Question 2:  see code below
+
+```{r}
+region_col <- WorldCities$region
+unique(region_col)
+```
+
+# Question 3:  see code below
+```{r}
+WorldCities %>% ggplot(aes(x=population))+ geom_histogram()
+```
+
+# Question 4:  see code below.
+
+```{r}
+WorldCities %>% ggplot(aes(x=population))+geom_histogram()+xlab('CITY POPULATION')+ylab('COUNT')+ggtitle('Homework 1')+theme_bw()
+```
