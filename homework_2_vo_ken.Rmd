@@ -52,20 +52,20 @@ Question 3.3.1-1:  The code doees not produce the intended coloring of the data 
 
 Question 3.3.1-2:  The categorial variables are model, displ, year, cyl, trans, drv, fl and class.  The continuous variables are cty and hwy.  When you run mpg, you can see these information underneath the column heading which indicate whether the columnn holds character (e.g. chr) or number(e.g. dbl or int).
 
-Question 3.3.1-3: Mapping a continuous variable to color creates no error.
+Question 3.3.1-3(part 1): Mapping a continuous variable to color creates no error.
 ```{r}
 ggplot (data = mpg)+
   geom_point(mapping = aes(x=displ, y=hwy, color=cty))
 ```
 
-Question 3.3.1-3: Mapping a continuous variable to size creates no error. 
+Question 3.3.1-3(part 2): Mapping a continuous variable to size creates no error. 
 ```{r}
 ggplot (data = mpg)+
   geom_point(mapping = aes(x=displ, y=hwy, size=cty))
 
 ```
 
-Question 3.3.1-3: Mapping a continuous variable shape creates an error. Some aesthetics only work on continuous variables while other aesthetics only work on categorical. 
+Question 3.3.1-3(part 3): Mapping a continuous variable shape creates an error. Some aesthetics only work on continuous variables while other aesthetics only work on categorical. 
 
 # Question 3.3.1-4: Mapping the same variable to multiple aestetics creates a gradient visualization.
 ```{r}
@@ -147,6 +147,12 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
 
 ```
 
-------------------------------3.7.1 Exercise--------------------------------------------
+-----------------------------------------3.7.1 Exercise--------------------------------------------
 
 Question 3.7.1-2:  geom_col() leaves the data as it is and you can plot the values of x variable against any y variable.  geom_bar() creates two variables (count and prop) and then graphs the count data on the y axis.
+
+----------------------------------------Graphics Analysis------------------------------------------
+
+I like the large graphics and fonts - easy to read.  I like it that the color pallettes used are not wildly distributed.
+
+I don't like the circular plots.  Especially, the largest circle with only a number at the center seems to show a waste of space.
