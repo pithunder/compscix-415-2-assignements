@@ -1,0 +1,156 @@
+---
+title: "homework_3_vo_ken"
+author: "Ken Vo"
+date: "February 13, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(mdsr)
+library(nycflights13)
+```
+
+SECION 3.8.1
+
+Exercise 3.8.1-#1
+The plot has no correlation in terms of the data.  Cty and hwy are to be correlate to other variables such as drv, class, ect.. In ohter only one of the reponse variables (cty or hwy) plotted on axis.
+
+Many data points overlap.  We can use geom_jitter to jitter the points by adding some noise.
+
+Exercise 3.8.1-#2
+The parameters to geom_jitter() that control the amount of jitter are width and height.
+
+Exercise 3.8.1-#3 (Part 1)
+```{r}
+ggplot(data=mpg, mapping=aes(x=cty, y=hwy))+
+  geom_jitter()
+```
+
+Exercise 3.8.1-#3 (Part 2)
+```{r}
+ggplot(data=mpg, mapping=aes(x=cty, y=hwy))+
+  geom_count()
+```
+While geom_jitter adds noise, geom_count counts the number of observations at each location and maps the count to point area.  The points are being made larger when there are more observations in that area.
+
+Exercise 3.8.1-#4
+The default position adjustments is position_dodge().
+```{r}
+ggplot(data=mpg, mapping=aes(x=class, y=hwy, color=drv))+
+  geom_boxplot(position="dodge")
+```
+
+SECTION 3.9.1
+
+Exercise 3.9.1-#1
+```{r}
+ggplot(data=mpg, mapping=aes(x=factor(1), fill=class))+
+  geom_bar(width=1)+
+  coord_polar(theta="y")
+```
+
+Exercise 3.9.1-#2
+Lab() adds labels to the graph.
+
+Exercise 3.9.1-#4
+The relationship is approximately linear.  The overall cars have slightly better highway mileage than city mileage.  Using coord_fix() causes the plot draw intervals onthe x and y axes resuting in not so direct comparision.
+```{r}
+ggplot(data=mpg, mapping=aes(x=cty, y=hwy))+
+  geom_point()+
+  coord_fixed()
+```
+
+
+```{r}
+ggplot(data=mpg, mapping=aes(x=cty, y=hwy))+
+  geom_point()+
+  geom_abline()
+```
+geom_abline() draws a line which has an intercept at 0 and a slope of 1.
+
+SECTION 4.4
+
+Excercise 4.4-#1
+The second calling of my_var1able has a typo.  The letter "i" is replaced by small font "l" or "1."
+
+Excercise 4.4-#2
+```{r}
+  # fliter is mispelled - it should be filter.  Also, there should be two equal signs with cyl=8.  The corrected line is below.
+  filter(mpg, cyl==8)
+  
+  #the next line has the diamond arguement which is not part of the mpg data.  Therefore, the line is     not needed
+```
+
+SECTION 5.2.4
+
+Excercise 5.2.4-#1
+```{r}
+filter(flights, arr_delay>=120)
+```
+
+```{r}
+filter(flights, dest=='IAH' | dest=='HOU')
+#or filter (flights, dest %in% c('IAH', 'HOU'))
+```
+
+```{r}
+filter(flights, carrier=="UA"|carrier=="AA"|carrier=="DL")
+# or filter(flights, carrier %in% c('UA', 'AA', 'DL'))
+```
+
+```{r}
+filter(flights, month==7|month==8|month==9)
+# or filter (flights, month>=7 & month<=9)
+# or filter (flights, month %in% c(7,8,9))
+```
+
+```{r}
+filter(flights, arr_delay>120 & dep_delay<=0)
+```
+
+```{r}
+filter(flights, dep_delay>=60 & dep_delay-arr_delay>30)
+```
+
+```{r}
+filter(flights, dep_time<=600 | dep_time==2400)
+#or filter (flights, between(dep_time, 601 2359))
+```
+
+Exercise 5.3.4-#3
+How many flights have a missing dep_time.  Base on the summary there are 8255 flights missing dep_time.  dep_delay is missing for 8255 flights.  arr-time is missing for 8713 flights.  arr_delay is missing for 9430 flights.  air_time is missing for 9430 flights.  The NA rows might have missing value or inknown values.
+
+```{r}
+summary(flights)
+```
+
+Exercise 5.2.4-#4
+NA^0 equals 1 because anything to the power of 0 is 1.
+
+With NA | TRUE, since the | operator returns TRUE if either of the terms are true, the whole expression returns true because the right half returns true.
+
+& returns TRUE when both terms are true. So, for example, TRUE & TRUE evaluates to TRUE. In FALSE & NA, one of the terms is false, so the expression evaluates to FALSE.
+
+One expect that NA times 0 should give 0, but the result is NA. The reason is because NA could be either a finite or infinity (Inf) number.  When NA is finite we get 0.  When NA is inf we get NaN. So we are facing with the two possible outcomes (0 or NaN) in NA*0.  Since we don't which outcome we get, we say we don't know which is NA.
+
+SECTION 5.4.1
+
+Exercise 5.4.1-#1
+```{r}
+select(flights, dep_time, dep_delay, arr_time, arr_delay)
+```
+```{r}
+select(flights, starts_with("dep"), starts_with("arr"))
+```
+```{r}
+select(flights, ends_with("delay"))
+```
+
+Exercise 5.4.1-#3
+It selects any variable which matches one of the strings in the vector.
+
