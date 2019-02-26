@@ -1,0 +1,147 @@
+---
+title: "homework_4_vo_ken"
+author: "Ken Vo"
+date: "February 26, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_packages, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(mdsr)
+library(nycflights13)
+```
+
+-----------------------------------------SECTION 5.6 EXERCISES-------------------------------------
+
+Exercise 5.6.7-#2 answer:
+
+```{r}
+flights %>%
+  filter (!is.na(dep_delay), !is.na(arr_delay)) %>%
+  group_by(dest) %>%
+  summarize(n=n())
+
+```
+
+```{r}
+flights %>%
+  filter (!is.na(dep_delay), !is.na(arr_delay)) %>%
+  group_by(tailnum) %>%
+  tally(wt=distance)
+
+```
+
+Exercise 5.6.7-#4 answer:
+
+There is a pattern in the cancelled flights.  The proportion of cancelled flights is related to the average delay.  The higher the average delay of the day, the higher the proportion of cancelled flights.
+
+```{r}
+flights %>%
+  group_by(day) %>%
+  summarize(cancelled=mean(is.na(dep_delay)),
+            mean_dep=mean(dep_delay, na.rm=T),
+            mean_arr=mean(arr_delay, na.rm=T)) %>%
+  ggplot(aes(y=cancelled))+
+  geom_point(aes(x=mean_dep, color='red'))+
+  geom_point(aes(x=mean_arr, color='blue'))+
+  labs(x="Avg delay per day", y="Cancelled flights per day")
+```
+
+Exercise 5.6.7-#6 answer:
+The sort arguement will sort the results of count() in descending order.  This could be use to arrange the results after completing the count.
+
+
+---------------------------------------SECTION 10 EXERCISES----------------------------------------
+
+```{R}
+
+print(mtcars)
+```
+
+Exercise 10.5-#1 answer:
+If an object is a tibble, the print command prints only the first 10 observations (rows) and all the columns that can be fitted on the screen.
+
+Exercise 10.5-#2 answer:
+When using $ in df$x when the object is a data.frames, the $ option would complete the column heading of xyz and returns a value - i.e. we don't need to type out "xyz" when we are requesting value for that colmn.  When the object is tibble, the $ option would not complete the column heading and specifically look for a column that is specified by whatever that comes after $.
+
+With data.frames, with `[` the type of object that is returned differs on the
+number of columns. If it is one column, it won't return a data.frame, but
+instead will return a vector. With more than one column, then it will return a
+data.frame.
+
+```{R}
+df <- data.frame(abc=1, xyz="a")
+df$x
+df[, "xyz"]
+df[,c("abc", "xyz")]
+```
+
+```{r}
+tbl <- as_tibble(df)
+tbl$x
+tbl[, "xyz"]
+tbl[,c("abc", "xyz")]
+```
+
+Exercise 10.5-#3 answer:
+One can use the double bracket to extract the reference variable from a tibble.
+
+Exercise 10.5-#6 answer:
+The help page for the print method of the tibble object.  The n-extra arguement determines the number of extra columns to print information for the tible.
+
+------------------------------------SECTION 12.3 EXERCISES-----------------------------------------
+
+Exercise 12.3.3-#2 answer:
+The code failed because the column names 1999 and 2000 are not non-syntactic variable names.
+
+Exercise 12.3.3-#3 answer:
+Spreading this data frame fails because the name and key columns do not uniquely identify rows.  Specifically, there are two rows with values for the age of "Phillip Woods"
+
+One could add a column that has distinctive value for the same rows.
+
+Exercise 12.3.3-#4 answer:
+To tidy the preg tibble, we need to use gather().  The variables in this data are: sex, pregnant and count.
+
+```{R}
+preg <- tribble(
+  ~pregnant, ~male, ~female,
+  "yes", NA, 10,
+  "no", 20, 12
+)
+
+preg_tidy <- preg %>%
+  gather(male, female, key="sex", value="count")
+
+preg_tidy
+```
+
+--------------------------------------SECTION 12.4 EXERCISES-------------------------------------------
+
+Exercise 12.4.3-#1 answer:
+The extra argument tells separate() what to do if there are too many pieces, and teh fill argument tells it what to do if there aren't enough.
+```{r}
+tibble(x=c("a,b,c","d,e,f,g","h,i,j")) %>%
+  separate(x, c("one", "two", "three"))
+
+```
+```{r}
+# using drop extra
+tibble(x=c("a,b,c","d,e,f,g","h,i,j")) %>%
+  separate(x, c("one", "two", "three", extra="drop"))
+
+```
+
+```{r}
+# using merge extra causing the extra value to merge
+tibble(x=c("a,b,c","d,e,f,g","h,i,j")) %>%
+  separate(x, c("one", "two", "three", extra="merge"))
+
+```
+
+Exercise 12.4.3-#2 answer:
+The remove argument would delete input columns in the result data frame.
+
