@@ -145,3 +145,20 @@ tibble(x=c("a,b,c","d,e,f,g","h,i,j")) %>%
 Exercise 12.4.3-#2 answer:
 The remove argument would delete input columns in the result data frame.
 
+-----------------------------------EXTRA----------------------------------------
+
+```{r}
+file_path <- "/home/me/Downloads/baby_names.txt"
+baby_names <- read_csv(file=file_path)
+
+glimpse(baby_names)
+
+write.csv(baby_names, file = "baby_names.csv")
+
+
+file_path <- "/home/me/Documents/Data Science Certificate Courses/Compscix-415-2/compscix-415-2-assignements/baby_names.csv"
+baby_names_csv <- read_csv(file=file_path)
+
+glimpse(baby_names_csv)
+
+```

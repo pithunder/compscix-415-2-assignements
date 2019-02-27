@@ -366,6 +366,33 @@ tibble(x=c(&quot;a,b,c&quot;,&quot;d,e,f,g&quot;,&quot;h,i,j&quot;)) %&gt;%
 ## 2 d     e     f     g    
 ## 3 h     i     j     &lt;NA&gt;</code></pre>
 <p>Exercise 12.4.3-#2 answer: The remove argument would delete input columns in the result data frame.</p>
+<p>———————————–EXTRA—————————————-</p>
+<pre class="r"><code>file_path &lt;- &quot;/home/me/Downloads/baby_names.txt&quot;
+baby_names &lt;- read_csv(file=file_path)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   `year|sex|name|n|prop` = col_character()
+## )</code></pre>
+<pre class="r"><code>glimpse(baby_names)</code></pre>
+<pre><code>## Observations: 30,000
+## Variables: 1
+## $ `year|sex|name|n|prop` &lt;chr&gt; &quot;1880|F|Mary|7065|0.0723843285111266&quot;, &quot;1…</code></pre>
+<pre class="r"><code>write.csv(baby_names, file = &quot;baby_names.csv&quot;)
+
+
+file_path &lt;- &quot;/home/me/Documents/Data Science Certificate Courses/Compscix-415-2/compscix-415-2-assignements/baby_names.csv&quot;
+baby_names_csv &lt;- read_csv(file=file_path)</code></pre>
+<pre><code>## Warning: Missing column names filled in: 'X1' [1]</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   X1 = col_double(),
+##   `year|sex|name|n|prop` = col_character()
+## )</code></pre>
+<pre class="r"><code>glimpse(baby_names_csv)</code></pre>
+<pre><code>## Observations: 30,000
+## Variables: 2
+## $ X1                     &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13…
+## $ `year|sex|name|n|prop` &lt;chr&gt; &quot;1880|F|Mary|7065|0.0723843285111266&quot;, &quot;1…</code></pre>
 
 
 
