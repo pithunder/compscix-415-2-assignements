@@ -1,0 +1,275 @@
+---
+title: "COMPSCIX 415.2 Homework 5/Midterm"
+author: "Ken Vo"
+date: "March 5, 2019"
+output: html_document
+---
+
+My Github repository for my assignments can be fournd at this URL:  https://github.com/pithunder/compscix-415-2-assignements
+
+# **Table of contents**
+
+## I. R setup code
+
+## II. Loading libraries
+
+## III. Rstudio and R Markdown 
+
+## IV.  Tidyverse packages
+
+## V. R basics
+
+## VI. Data import/export
+
+## VII. Visualization
+
+## VIII. Data mungling and wrangling
+
+## IX.  EDA
+******
+### I.  R setup code
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### II. Loading libraries
+```{r load_packages, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(mdsr)
+library(nycflights13)
+```
+
+### III.  Rstudion and R Markdown
+####   Answer:  See layout of this document.
+
+### IV.  Tidyverse packages
+#### Answers to question 1:
+
+* #### Plotting is associated with ggplot2 package.
+* #### Data munging/wrangling is associated with dplyr package.
+* #### Reshaping (spreading and gathering) data is associated with tidyr package.
+* #### Importing/exporting data is associated with readr package  
+
+#### Answers to question 2:
+* #### Two functions associated with the ggplot2 package are ggplot() and aes().
+* #### Two functions associated with the dplyr package are filter() and summarise().
+* #### Two functions associated with the tidyr package are spred() and unite().
+* #### Two functions associated with the readr package are read_csv() and write_csv().
+
+
+### V.  R Basics
+#### Answers to question 1:
+* #### Delete the exclamation mark.
+
+#### Answers to question 2:
+* #### Change the uppercase "C" to lowercase "c"
+
+#### Answers to question 3:
+* #### The single quote on any one value will return all the value as strings.
+
+### VI. Data import/export:
+#### Answers to question 1:
+```{r}
+file_path <- "/home/me/Documents/Data Science Certificate Courses/Compscix-415-2/compscix-415-2-assignments/rail_trail.txt"
+rail_trail_txt <- read_delim(file=file_path, delim='|')
+
+glimpse(rail_trail_txt)
+
+```
+
+#### Answers to question 2:
+```{r}
+write_delim(rail_trail_txt, path = "/home/me/Documents/Data Science Certificate Courses/Compscix-415-2/compscix-415-2-assignments/rail_trail_delim.csv", delim=',')
+
+file_path_write <- "/home/me/Documents/Data Science Certificate Courses/Compscix-415-2/compscix-415-2-assignments/rail_trail_delim.csv"
+
+rail_trail_delim.csv <- read_csv(file=file_path_write)
+
+glimpse(rail_trail_delim.csv)
+
+```
+
+### VII.  Visualization
+#### Answers to question 1:
+* #### There is no units to the numbers in the circles (e.g. percentage, number of people)
+* #### The column name for the information in the first column is missiong (should be "Age Range".  "Under 45" could mean under 45 inches.
+* #### Men and Woman should not be in the same column as "Under 45".
+
+#### Answers to question 2:
+```{r}
+ggplot(data = diamonds)+ 
+  geom_boxplot(mapping = aes(x = cut, y=carat, fill=color), position = position_dodge(width = 0), width=6)+
+  coord_flip()+
+  xlab("CUT OF DIAMOND")+
+  ylab("CARAT OF DIAMOND")
+```
+
+#### Answers to question 3:
+```{r}
+ggplot(data = diamonds)+ 
+  geom_boxplot(mapping = aes(x = reorder(cut, carat, FUN=median), y=carat, fill=color), position = position_dodge(width = 0), width=6)+
+  coord_flip()+
+  xlab("CUT OF DIAMOND")+
+  ylab("CARAT OF DIAMOND")
+  
+```
+
+### VIII. Data mungling and wrangling
+#### Answers to question 1:
+
+```{r}
+tidy4a <- table4a %>% 
+  gather(`1999`, `2000`, key = "year", value = "cases")
+tidy4b <- table4b %>% 
+  gather(`1999`, `2000`, key = "year", value = "population")
+left_join(tidy4a, tidy4b)
+```
+
+#### Answers to question 2:
+```{r}
+diamonds_more <- select(diamonds, carat, cut, color, clarity, depth, table, price, x, y, z)
+
+mutate(diamonds_more,
+       price_per_carat = price / carat)
+
+glimpse(diamonds_more)
+```
+
+#### Answers to question 3:
+* #### The result makes sense base on the less-than-one value.  We need to be wary of these numbers because
+
+```{r}
+#getting the total number of diamonds
+count1 <- summarize(diamonds,
+                    count=n())
+
+# calculating the proportion for Ideal cut
+diamonds_cut_ideal <- filter(diamonds, cut=="Ideal" & price>10000 & carat<1.5)
+
+count_ideal <- summarize(diamonds_cut_ideal,
+                        count=n())
+proportion_ideal <- count_ideal/count1
+
+proportion_ideal
+
+# calculating the proportion for Premium cut
+diamonds_cut_premium <- filter(diamonds, cut=="Premium" & price>10000 & carat<1.5)
+count_premium <- summarize(diamonds_cut_premium,
+                        count=n())
+proportion_premium <- count_premium/count1
+
+proportion_premium
+
+# calculating the proportion for Very Good cut
+diamonds_cut_vg <- filter(diamonds, cut=="Very Good" & price>10000 & carat<1.5)
+count_vg <- summarize(diamonds_cut_vg,
+                        count=n())
+proportion_vg <- count_vg/count1
+
+proportion_vg
+
+# calculating the proportion for Good cut
+diamonds_cut_g <- filter(diamonds, cut=="Good" & price>10000 & carat<1.5)
+count_g <- summarize(diamonds_cut_g,
+                        count=n())
+proportion_g <- count_g/count1
+
+proportion_g
+
+# calculating the proportion for Fair cut
+diamonds_cut_f <- filter(diamonds, cut=="Fair" & price>10000 & carat<1.5)
+count_f <- summarize(diamonds_cut_f,
+                        count=n())
+proportion_f <- count_f/count1
+
+proportion_f
+
+```
+
+### IX. EDA
+#### Answers to question 1:
+* #### The txhousing data is from 2000-2015.
+```{r}
+
+collection_year <- txhousing %>% select(year)
+range(collection_year)
+
+```
+
+#### Answers to question 2:
+* #### The code below produces 46 distinct cities.
+```{r}
+txhousing %>%
+  summarise(n_distinct(city))
+
+```
+
+#### Answers to question 3:
+* #### The code below shows Houston is the city with the highest sale in July 2015.
+```{r}
+txhousing %>%
+  select(city, year, month, sales) %>%
+  arrange(desc(sales))
+#  summarise(max(sales))
+
+```
+
+#### Answers to question 4:
+* #### As the number of sales increases, the number of listings increases.
+```{r}
+ggplot(txhousing)+
+  geom_point(mapping=aes(x=listings, y=sales))
+```
+
+#### Answers to question 5:
+```{r}
+#creating a table for all sales value equals NA.  This table has two columns: sales, city.  Then, add a column for the proportion.
+NA_table_prop <- txhousing %>%
+  filter(is.na(sales)) %>%
+  select(city, sales) %>%
+  group_by(city) %>%
+  summarise(n=n()) %>%
+  mutate(prop=n/sum(n))
+
+NA_table_prop
+
+ggplot(NA_table_prop) +
+  geom_col(aes(city, y = prop)) +
+  geom_text(aes(x = city, y =prop+0.02, label = round(prop, 3)), srt=90)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  xlab("City")+
+  ylab("Proportion Missing Sales")
+  
+```
+
+#### Answers to question 6:
+* #### The median sales price are not the same for the cities while the median sales price for the months are the similar. Cities that stand out are Austin and San Antonio where there is bi-modal distribution.
+* #### The reason that we want to filter out all cities and months with sales less than 500 is because it would produce manageable data set (less).
+```{r}
+# filtering sales greater than 500 and output columns city, sales and median.
+above500_by_city <- txhousing %>%
+  filter(sales > 500) %>%
+  select(city, median) %>%
+  group_by(city)
+
+# filtering sales greater than 500 and output columns month, sales and median
+above500_by_month <- txhousing %>%
+  filter(sales > 500) %>%
+  select(month, median) %>%
+  group_by(month)
+
+ggplot(data = above500_by_city, aes(x = median)) +
+  geom_histogram() +
+  facet_wrap(~city) +
+  xlab("Median Sale Price") +
+  ggtitle("Median Sale Price by City")
+
+ggplot(data = above500_by_month, aes(x = median)) +
+  geom_histogram() +
+  facet_wrap(~month) +
+  xlab("Median Sale Price") +
+  ggtitle("Median Sale Price by Month")
+
+```
+
+
