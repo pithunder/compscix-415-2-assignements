@@ -1,0 +1,179 @@
+---
+title: "homework_6_vo_ken"
+author: "Ken Vo"
+date: "March 12, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_packages, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(mdsr)
+library(ggpubr)
+library(mosaicData)
+data(Whickham)
+```
+
+--------------------------------------- EXERCISE 1 ------------------------------------
+
+Answer to question 1:  The glimpse command reveals 3 variables:  outcome, smoker and age.
+
+Answer to question 2:  There are 1314 observations.  The outcome variable represents the survival status after 20 years with values of Alive and Dead.  The smoker variable represents the smoker's smoking status with values of No and Yes.  The age variable represents the age at the time of the first survey.
+
+Answer to question 3:
+The visualization reveals an inconsistent correlation between smoker status and outcome.  For example, for non-smoker, the number of dead people should less than that of smoker but the graph shows the opposite trend. 
+```{r}
+smoker_outcome <- Whickham %>% count(smoker, outcome)
+smoker_outcome
+ggplot(data=smoker_outcome)+
+  geom_point(mapping=aes(x=smoker, y=n, color=outcome))+
+  xlab("Smoker or Non-Smoker")+
+  ylab("Number of People")
+```
+
+Answer to question 4:
+When the age data is incorporated, the correlation between smoker status and outcome makes sense.
+
+Note:  The final plot is not showing the x-axis marks of "no" and "yes" eventhough the command is there.  I don't know why.
+```{r}
+# filtering age <=44 into a table by the name of "less_equal44"
+less_equal44 <- Whickham %>% filter (age<=44) %>% count(smoker, outcome) %>% mutate(less44=n) %>% select (smoker, outcome, less44)
+
+# filtering age>44 and <=64 into a table by the name of "greater44lessequal64"
+greater44lessequal64 <- Whickham %>% filter(age==45:64) %>% count(smoker, outcome) %>%
+mutate(between45and64=n) %>% select (smoker, outcome, between45and64)
+
+# filtering age>64 into a table by the name of "greater64"
+greater64 <- Whickham %>% filter(age>64) %>% count(smoker, outcome) %>% mutate(greater64=n) %>% select (smoker, outcome, greater64)
+
+# combining first two tables into table "combined_1"
+combined_1 <- merge(less_equal44, greater44lessequal64, by=c("smoker", "outcome"))
+
+# combining third tables with combine_1 table into table "combined_2"
+combined_2 <- merge(combined_1, greater64, by=c("smoker", "outcome"))
+
+# Plotting three individual plots for each age group.
+age1 <- ggplot(data=combined_2)+
+  geom_point(mapping=aes(x=smoker, y=less44, color=outcome))+
+  theme(axis.title.x = element_blank(), axis.text.x = element_blank())+
+  theme(axis.title.y = element_blank())
+
+age2 <- ggplot(data=combined_2)+
+  geom_point(mapping=aes(x=smoker, y=between45and64, color=outcome))+
+  theme(axis.title.x = element_blank(), axis.text.x = element_blank())+
+  ylab("Number of People")
+
+age3 <- ggplot(data=combined_2)+
+  geom_point(mapping=aes(x=smoker, y=greater64, color=outcome))+
+  theme(axis.title.y = element_blank())+
+  theme(axis.text.x = element_text())+
+  xlab("Smoker or Non-Smoker")
+
+#combining the three plots together.
+ggarrange(age1, age2, age3 + rremove("x.text"), 
+          labels = c("Age: <=44", "44 < Age <=64", "Age >64"),
+          common.legend = TRUE, legend = "right",
+          ncol = 1, nrow = 3
+        )
+```
+
+------------------------------------ EXERCISE 2 -------------------------------------
+
+Answer to question 1:
+```{r}
+n <- 10000
+gamma_sample <- tibble(x=rgamma(n,shape=1, scale=2))
+gamma_sample
+
+ggplot(data=gamma_sample)+
+  geom_histogram(mapping=aes(x))
+```
+
+Answer to question 2:
+The mean of the sample is 2.027528.  The standard deviation of the sample is 2.043245.
+```{r}
+mean_sample <- gamma_sample %>% .[['x']] %>% mean()
+mean_sample
+
+standard_deviation <- gamma_sample %>% .[['x']] %>% sd()
+standard_deviation
+```
+
+Answer to question 3:
+```{r}
+n30 <- 30
+gamma_sample_30 <- tibble(x=rgamma(n30,shape=1, scale=2))
+
+ggplot(data=gamma_sample_30)+
+  geom_histogram(mapping=aes(x))
+
+mean_sample_30 <- gamma_sample_30 %>% .[['x']] %>% mean()
+mean_sample_30
+
+standard_deviation_30 <- gamma_sample_30 %>% .[['x']] %>% sd()
+standard_deviation_30
+```
+
+Answer to question 4:
+```{r}
+mean_sample_30_wNA <- rep(NA,10000)
+
+for (i in 1:10000){
+  g_sample <- rgamma(30, shape=1, scale=2)
+  mean_sample_30_wNA[i] <- mean(g_sample)
+}
+
+mean_sample_30_wNA_tib <- tibble(mean_sample_30_wNA)
+
+mean_sample_30_wNA_tib
+```
+
+Answer to question 5:
+```{r}
+ggplot(data=mean_sample_30_wNA_tib)+
+  geom_histogram(mapping=aes(mean_sample_30_wNA), binwidth = .01)
+
+```
+
+Answer to question 6:
+The mean is 1.99941.  The standard deviation is 0.3615982.
+```{r}
+mean_mean <- mean_sample_30_wNA_tib %>% .[['mean_sample_30_wNA']] %>% mean()
+mean_mean
+
+standard_deviation_mean <- mean_sample_30_wNA_tib %>% .[['mean_sample_30_wNA']] %>% sd()
+standard_deviation_mean
+```
+
+Answer to question 7:
+There is not surprises with the mean and standard deviation obtained from quesion 6.
+
+
+Answer to question 8:
+The mean and standard deviation from sample size of 300 match well with the theorem.
+```{r}
+
+mean_sample_300_wNA <- rep(NA,300)
+
+for (i in 1:300){
+  g_samp_300 <- rgamma(30, shape=1, scale=2)
+  mean_sample_300_wNA[i] <- mean(g_samp_300)
+}
+
+mean_sample_300_wNA_tib <- tibble(mean_sample_300_wNA)
+
+ggplot(data=mean_sample_300_wNA_tib)+
+  geom_histogram(mapping=aes(mean_sample_300_wNA))
+
+mean_mean_300 <- mean_sample_300_wNA_tib %>% .[['mean_sample_300_wNA']] %>% mean()
+mean_mean_300
+
+standard_deviation_mean_300 <- mean_sample_300_wNA_tib %>% .[['mean_sample_300_wNA']] %>% sd()
+standard_deviation_mean_300
+
+```
+
+
