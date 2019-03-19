@@ -1,0 +1,121 @@
+---
+title: "homework_7_vo_ken"
+author: "Ken Vo"
+date: "March 19, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_packages, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(mdsr)
+library(ggpubr)
+library(broom)
+library(scales)
+```
+
+--------------------------------------- EXERCISE 1 ------------------------------------
+
+The glimpse command returns 1,460 observations and 81 columns.
+
+```{r}
+fl_pth_train <- "/home/me/Documents/Data Science Certificate Courses/Compscix-415-2/compscix-415-2-assignments/train.csv"
+train <- read_csv(file=fl_pth_train)
+
+glimpse(train)
+
+```
+
+--------------------------------------- EXERCISE 2 ------------------------------------
+
+Exercise 2 - Visualizing the distribution of SalePrice
+```{r}
+ggplot(data=train)+
+  geom_histogram(mapping=aes(x=SalePrice))+
+  scale_x_continuous(labels=comma)
+```
+
+Exercise 2 - Visualizing SalePrice and Neighborhood
+```{r}
+ggplot(data = train, mapping = aes(x = Neighborhood, y = SalePrice)) + 
+  geom_boxplot()
+```
+
+Exercise 2 - Visualizing SalePrice and OverallQual
+```{r}
+ggplot(data = train) + 
+  geom_point( mapping = aes(x = OverallQual, y = SalePrice))+
+  scale_y_continuous(labels=comma)
+```
+
+--------------------------------------- EXERCISE 3 ------------------------------------
+
+
+```{r}
+saleprice_lm <- lm(formula = SalePrice ~ OverallQual, data = train)
+summary(saleprice_lm)
+
+ggplot(data=train, mapping=aes(x=OverallQual,y=SalePrice)) + geom_point() +
+   stat_smooth(method = "lm", col = "red")
+
+```
+
+------------------------------------ EXERCISE 4 ------------------------------------
+
+The overall relationship these features have on the target is that of an increase  of the target.  The relationship can be roughly estimated linearly.  These are good features.
+
+The intercepts and slopes are very different for GrLivArea and OverallQual.  This means that the two features affect the SalePrice differently.  The higher slope of OverallQual indicates a more dramatic rise in SalePrice compare to GrLivArea.  The negative intercept of OverallQual does not make sense.  Hence the model for OverallQual is not as robuts as the model for GrLivArea.
+
+The three features, GrLivArea, OverallQual, and Neighborhood are practically significant.  The model is good fit except for the fit to the Neighborhood.
+
+Using GrLivArea as feature.
+```{r}
+saleprice_lm <- lm(formula = SalePrice ~ GrLivArea, data = train)
+summary(saleprice_lm)
+
+ggplot(data=train, mapping=aes(x=GrLivArea,y=SalePrice)) + geom_point() +
+   stat_smooth(method = "lm", col = "red")
+
+```
+
+Using OverallQual as feature.
+```{r}
+saleprice_lm <- lm(formula = SalePrice ~ OverallQual, data = train)
+summary(saleprice_lm)
+
+ggplot(data=train, mapping=aes(x=OverallQual,y=SalePrice)) + geom_point() +
+   stat_smooth(method = "lm", col = "red")
+
+```
+
+Using Neighborhood as feature.
+```{r}
+saleprice_lm <- lm(formula = SalePrice ~ Neighborhood, data = train)
+summary(saleprice_lm)
+
+ggplot(data=train, mapping=aes(x=Neighborhood,y=SalePrice)) + geom_point() +
+   stat_smooth(method = "lm", col = "red")
+
+```
+
+
+--------------------------------------- EXERCISE 6 ------------------------------------
+
+The coefficient on x and the R-squared values do not change much from one run to another.
+```{r}
+sim1a <- tibble(
+x = rep(1:10, each = 3),
+y= x * 1.5 + 6 + rt(length(x), df = 2)
+)
+
+ggplot(data=sim1a, mapping=aes(x,y)) + geom_point() +
+   stat_smooth(method = "lm", col = "red")
+
+sim1a_lm <- lm(formula = y ~ x, data = sim1a)
+summary(sim1a_lm)
+
+```
+
