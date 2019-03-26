@@ -1,0 +1,80 @@
+---
+title: "homework_8_vo_ken"
+author: "Ken Vo"
+date: "March 26, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_packages, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(mdsr)
+library(leaflet)
+library(jsonlite)
+```
+
+--------------------------------------- EXERCISES ------------------------------------
+
+```{r}
+# get data from the web
+web_bikedata <- function(contract_name) {
+  url <- paste0("https://api.jcdecaux.com/vls/v1/stations?contract=",contract_name,"&apiKey=28166a70d4ca0f15c9ac231e9bcbe150bb2aa015")
+  df_api = jsonlite::fromJSON(url, flatten = TRUE)
+  position.lng = df_api$position$lng
+  position.lat = df_api$position$lat
+  return (df_api)
+}
+
+# function map_it with arguement city_var that will call a city from the web_bikedata.  city_var arguement could be Dublin,  Seville, Luxembourg, ect..
+map_it <- function (city_var){
+
+#   change web_bikedata for the specific city to data frame
+    as.data.frame(web_bikedata(city_var)) %>%
+    mutate(longitude = position.lng, latitude = position.lat) %>%
+    select(longitude, latitude, bike_stands, available_bike_stands, available_bikes, status) %>%
+
+#   plotting date to map
+    leaflet() %>%
+    addTiles() %>%
+    addMarkers(label = ~as.character(available_bikes))
+}
+map_it("Seville")
+
+```  
+map_it <- leaflet() %>%
+  addTiles() %>%
+  addMarkers(lng=~lng, lat=~lat, data=bikedata("Dublin"))
+
+fit_model <- function(samp_size, x_var) {
+  diam_samp <- diamonds %>% sample_n(samp_size) # random sample
+  diam_samp_lm <- lm(paste0('price ~ ', x_var), data = diam_samp)
+  slopes <- coef(diam_samp_lm)[2] # store the coefficient
+  my_list <- list=diam_samp, model=diam_samp_lm, slope=slopes
+  return(my_list)
+}
+# call function
+fit_model(1000, 'carat')
+
+# for (i in c("Boson", "NY", "LA")){data %>% filter(city==i)}
+
+
+# geocode uc berkeley extension
+ucb_geo <- geocode(ucb_ext) # ucb_ext is the address as you would list it '160 Spear...'
+map <- leaflet() %>%
+  addTiles() %>%
+  addMarkers(lng = ~lon, lat = ~lat, data = ucb_geo)
+map
+
+city_geo <- bikedata(ucb_ext)
+map <- leaflet() %>%
+  addTiles() %>%
+  addMarkers(lng = ~lon, lat = ~lat, data = ucb_geo)
+map
+
+
+  
+
+
