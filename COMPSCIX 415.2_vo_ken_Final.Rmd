@@ -5,6 +5,7 @@ date:  4-5-19
 output:
   html_document:
     toc: yes
+    toc_float: TRUE
 ---
 
 ```{r setup, include=FALSE}
