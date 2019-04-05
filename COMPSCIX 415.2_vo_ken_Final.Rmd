@@ -1,0 +1,199 @@
+---
+title: "COMPSCIX 415.2 Homework 9/Final"
+author:  Ken Vo
+date:  4-5-19
+output:
+  html_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+My Github repository for my assignments can be fournd at this URL:  https://github.com/pithunder/compscix-415-2-assignements
+
+## Loading Libraries
+```{r load_packages, warning=FALSE, message=FALSE}
+
+library(tidyverse)
+library(broom)
+```
+
+## EXERCISE 1 - Step 1
+
+```{r}
+# sample size
+samp_size <- 50
+# set the rate parameter
+samp_rate <- 1/10000
+
+sample_mean <- sample_sd <- list()
+
+samp_funct <- function(samp_size, samp_rate) {
+  # take sample
+  take_sample <- rexp(samp_size, samp_rate)
+  sample_mean <- mean(take_sample)
+  sample_sd <- sd(take_sample)
+  my_stat <- list(sample_mean, sample_sd)
+  return(my_stat)
+}
+
+message("The list for the mean and standard deviation is " )
+samp_funct(samp_size, samp_rate)
+```
+
+## EXERCISE 1 - Step 2
+```{r}
+
+# sample size
+samp_size <- 50
+# set the rate parameter
+samp_rate <- 1/10000
+
+n <- 1000 #how many samples
+sample_means <- sample_sds <- rep(NA, n) # empty vector for saving coefficients
+
+samp_fun <- function(samp_size, samp_rate){
+for(i in 1:n) {
+  take_sample <- rexp(samp_size, samp_rate)
+  sample_means [i] <- mean(take_sample)# store the mean
+  sample_sds [i] <- sd(take_sample)# store the mean
+}
+all_results <- tibble(sample_means, sample_sds)
+return (all_results)
+}
+
+samp_fun (samp_size, samp_rate)
+```
+
+## EXERCISE 1 - Step 3
+
+```{r}
+
+ggplot(samp_fun(samp_size, samp_rate)) +
+  geom_histogram(mapping=aes(sample_means), bins=30)
+
+stdev_of_sample_means <- sd(samp_fun(samp_size, samp_rate)$sample_means)
+message ("The standard deviation of the sample means is ", round(stdev_of_sample_means, digits=2))
+theoretical_standard_error <- 10000/sqrt(samp_size)
+message ("The theoretical standard error is ", round(theoretical_standard_error,digits=2))
+
+mean_of_sample_sds <- mean(samp_fun(samp_size, samp_rate)$sample_sds)
+message ("The mean of the sample standard deviations is ", round(mean_of_sample_sds,digits=2))
+
+emp_stand_error <- mean_of_sample_sds/sqrt(samp_size)
+message ("The empirical standard error is ", round(emp_stand_error,digits=2))
+
+```
+
+## EXERCISE 1 - Step 4
+```{r}
+
+# sample size
+samp_size_step4 <- 5000
+# set the rate parameter
+samp_rate_step4 <- 1/10000
+
+n <- 1000 #how many samples
+sample_means_step4 <- sample_sds_step4 <- rep(NA, n) # empty vector for saving coefficients
+
+samp_fun_step4 <- function(samp_size_step4, samp_rate_step4){
+for(i in 1:n) {
+  take_sample_step4 <- rexp(samp_size_step4, samp_rate_step4)
+  sample_means_step4 [i] <- mean(take_sample_step4)# store the mean
+  sample_sds_step4 [i] <- sd(take_sample_step4)# store the mean
+}
+all_results_step4 <- tibble(sample_means_step4, sample_sds_step4)
+return (all_results_step4)
+}
+
+samp_fun_step4 (samp_size_step4, samp_rate_step4)
+
+ggplot(samp_fun_step4(samp_size_step4, samp_rate_step4)) +
+  geom_histogram(mapping=aes(sample_means_step4), bins=30)
+
+stdev_of_sample_means_step4 <- sd(samp_fun_step4(samp_size_step4, samp_rate_step4)$sample_means_step4)
+message ("The standard deviation of the sample means is ", round(stdev_of_sample_means_step4, digits=2))
+
+theoretical_standard_error_step4 <- 10000/sqrt(samp_size_step4)
+message ("The theoretical standard error is ", round(theoretical_standard_error_step4,digits=2))
+
+mean_of_sample_sds_step4 <- mean(samp_fun_step4(samp_size_step4, samp_rate_step4)$sample_sds_step4)
+message ("The mean of the sample standard deviations is ", round(mean_of_sample_sds_step4,digits=2))
+
+emp_stand_error_step4 <- mean_of_sample_sds_step4/sqrt(samp_size_step4)
+message ("The empirical standard error is ", round(emp_stand_error_step4,digits=2))
+
+```
+
+## EXERCISE 2
+
+```{r}
+fl_pth_train <- "C:/Users/moi/Documents/R/compscix-415-2-assignments-master/train.csv"
+train <- read_csv(file=fl_pth_train)
+
+mod_saleprice <- lm(SalePrice ~ LotArea + OverallQual + ExterQual, data = train)
+tidy(mod_saleprice)
+glance(mod_saleprice)
+
+```
+For every extra square foot in the lot area, the sale price increases, on average, by $1.45, with all other features being held constant.
+
+For every one unit increase in the overall quality of the house, the mean increase in the sale price is $34466.
+
+Using the glance command to output the Rsquared, shows the Rsquared of this model (0.69) is poorer than the Rsquared of the model fitted in HW 7 with GrLivArea, OverallQual, Neighborhood (0.79).
+
+## EXERCISE 3.a
+
+The proportion of visitors converted for version A is 0.0415.
+The proportion of visitors converted for version b is 0.1.
+
+```{r}
+fl_pth_ab <- "C:/Users/moi/Documents/R/compscix-415-2-assignments-master/ab_test_data.csv"
+ab <- read_csv(file=fl_pth_ab)
+
+a <- ab %>% filter(version=='A') # getting version A data only
+a_count <- count(a)
+a1 <- a %>% filter(conversion==1) # filtering converted 
+a1_count <- count(a1) # produces 83
+A_conv_rate <- a1_count/a_count # calculating the conversion rate for version A
+message("Conversion rate of website A = ", A_conv_rate)
+
+
+b <- ab %>% filter(version=='B') # getting version B data only
+b_count <- count(b)
+b1 <- b %>% filter(conversion==1)# filtering converted 
+b1_count <- count(b1) # produces 200
+B_conv_rate <- b1_count/b_count # calculating the conversion rate for version B
+message("Conversion rate of website B = ", B_conv_rate)
+
+```
+## EXERCISE 3.b
+```{r}
+# x is number of successes (conversions)
+# n is size of sample
+# p is our null hypothesized value
+prop_test_A <- prop.test(x = 83, n = 2000, p = .0415)
+prop_test_A$p.value
+
+prop_test_B <- prop.test(x = 200, n = 2000, p = .10)
+prop_test_B$p.value
+
+true_a <- .0415
+true_b <- .1
+n_a <- 2000
+n_b <- 2000
+# this part will simulate how many conversions there are
+# for our 1000 visitors, when we know the true conversion rates
+# n = 1 because we only want one sample conversion rate
+set.seed(10)
+samp_a <- rbinom(n = 1, size = n_a, prob = true_a)
+
+samp_b <- rbinom(n = 1, size = n_b, prob = true_b)
+
+two_prop_test <- prop.test(c(samp_a, samp_b), c(1000, 1000))
+two_prop_test$p.value
+
+```
+
+
